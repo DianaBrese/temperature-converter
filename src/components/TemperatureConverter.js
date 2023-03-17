@@ -2,8 +2,16 @@ import React, { useState } from "react";
 
 function TemperatureConverter() {
   let [temperature, setTemperature] = useState("");
+  const userSelect = document.querySelector("#user-choice");
+  const teclas = document.querySelectorAll(".tecla");
+  let resultados = document.querySelectorAll(".result")
 
   const handleTemperature = (valorTecla) => {
+    //Se usuário entrar -0 corrige para 0
+    if(temperature === "-0") {
+      setTemperature("0")
+    }
+
     // Impede entrada de mais de um ponto decimal
     if (valorTecla === "." && temperature.includes(".")) {
       return false;
@@ -25,14 +33,23 @@ function TemperatureConverter() {
     }
   };
 
-  console.log(temperature)
+  console.log(temperature);
   const handleBackSpace = () => {
     temperature = temperature.slice(0, -1);
     setTemperature(temperature);
   };
 
   const handleConverter = () => {
+ 
+
+    [].map.call(teclas, (el) => {
+      return el.setAttribute("disabled", true);
+    });
+
+    userSelect.setAttribute("disabled", true);
+
     temperature = Number(temperature);
+
     const resultCelsius = document.getElementById("celsius-temp");
     const resultFahrenheit = document.getElementById("fahrenheit-temp");
     const resultKelvin = document.getElementById("kelvin-temp");
@@ -45,7 +62,7 @@ function TemperatureConverter() {
 
     if (fromTemp === "C") {
       const celsiusTemperature = temperature.toFixed(2);
-     
+
       const fahrenheitTemperature = ((temperature * 9) / 5 + 32).toFixed(2);
       const kelvinTemperature = (temperature + 273.15).toFixed(2);
 
@@ -54,7 +71,6 @@ function TemperatureConverter() {
       resultKelvin.insertAdjacentHTML("afterbegin", kelvinTemperature);
     }
     if (fromTemp === "F") {
-    
       const fahrenheitTemperature = temperature.toFixed(2);
       const celsiusTemperature = (((temperature - 32) * 5) / 9).toFixed(2);
       const kelvinTemperature = (((temperature - 32) * 5) / 9 + 273.15).toFixed(
@@ -65,16 +81,37 @@ function TemperatureConverter() {
       resultKelvin.insertAdjacentHTML("afterbegin", kelvinTemperature);
     }
     if (fromTemp === "K") {
- 
       const kelvinTemperature = temperature.toFixed(2);
-      const fahrenheitTemperature = (1.8 * (temperature -273.15) + 32).toFixed(2);
+      const fahrenheitTemperature = (1.8 * (temperature - 273.15) + 32).toFixed(
+        2
+      );
       const celsiusTemperature = (temperature - 273.15).toFixed(2);
-      
+
       resultCelsius.insertAdjacentHTML("afterbegin", celsiusTemperature);
       resultFahrenheit.insertAdjacentHTML("afterbegin", fahrenheitTemperature);
       resultKelvin.insertAdjacentHTML("afterbegin", kelvinTemperature);
     }
+
   };
+
+  
+  const handleReset = () => {
+    //Habilita as teclas
+    [].map.call(teclas, (el) => {
+      return el.removeAttribute("disabled", true);
+    });
+
+    //Remove os resultados da conversão
+    [].map.call(resultados, (el) => {
+      if(el.hasChildNodes()) {
+        return el.removeChild(el.firstChild)
+      };
+    });
+
+    //Habilita campo de seleção da unidade de ,edida da temperatura
+    userSelect.removeAttribute("disabled")
+    setTemperature("")
+  }
 
   return (
     <>
@@ -212,7 +249,7 @@ function TemperatureConverter() {
         >
           -
         </button>
-        <div className="reset tecla">Nova conversão</div>
+        <div className="reset tecla" onClick={() => handleReset()}>Nova conversão</div>
       </aside>
     </>
   );
